@@ -1,0 +1,27 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Tweet Bubble Chart</title>
+    <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+    <script type="text/javascript" src="js/d3.js"></script>
+    <script src="js/amitabh-data.js"></script>
+    <script src="js/positive_negative_wordlist.js"></script>
+    
+    <script type="text/javascript" src="js/twitterMap-ayan.js"></script>
+    
+    <script type="text/javascript">
+         var myMap = new Tweet_map();
+         myMap.renderMap(); 
+    </script>
+    
+</head>
+<body>
+<script type="text/javascript" src="js/bubble_chart.js"></script>
+    <div id="svgContainer">
+    </div>
+    <div class="control-group">
+        <button onclick="update()">Next</button>
+    </div>
+
+</body>
+</html>
