@@ -5,7 +5,7 @@ function bubbleChart() {
             _margins = {top: 30, left: 30, right: 30, bottom: 30},
             _x, _y, _r, // <-A
             _data = [],
-            _colors = d3.scale.category10(),
+            /*_colors = d3.scale.category10(),*/
             _svg,
             _bodyG;
 
@@ -62,6 +62,16 @@ function bubbleChart() {
                 .attr("width", quadrantWidth() + 2 * padding)
                 .attr("height", quadrantHeight());
     }
+    function rgbToHex(R,G,B) {
+        return toHex(R)+toHex(G)+toHex(B)
+    }
+    function toHex(n) {
+         n = parseInt(n,10);
+         if (isNaN(n)) return "00";
+         n = Math.max(0,Math.min(n,255));
+         return "0123456789ABCDEF".charAt((n-n%16)/16)
+              + "0123456789ABCDEF".charAt(n%16);
+    }
 
     function renderBody(svg) {
         if (!_bodyG)
@@ -88,11 +98,21 @@ function bubbleChart() {
 
             _bodyG.selectAll("circle._" + i)
                         .data(list)
-                    .style("stroke", function (d, j) { 
-                        return _colors(j); 
+                    .style("stroke", function (d, j) {
+                       if(d.y > 0)
+                            return '#00ff00';
+                        else if(d.y < 0)
+                            return '#ff0000';
+                        else
+                            return '#787878';  
                     })
                     .style("fill", function (d, j) { 
-                        return _colors(j); 
+                        if(d.y > 0)
+                            return '#00ff00';
+                        else if(d.y < 0)
+                            return '#ff0000';
+                        else
+                            return '#787878';
                     })
                     .transition()
                     .attr("cx", function (d) { 
@@ -149,11 +169,11 @@ function bubbleChart() {
         return _chart;
     };
 
-    _chart.colors = function (c) {
+   /* _chart.colors = function (c) {
         if (!arguments.length) return _colors;
         _colors = c;
         return _chart;
-    };
+    };*/
 
     _chart.x = function (x) {
         if (!arguments.length) return _x;
@@ -187,12 +207,12 @@ function drawigngData() {
     return {
         x : drawigngData.tweet_count,
         y : tweet_map.getter().drawingInfo(drawigngData.tweet_count).yCoordinate,
-        r : tweet_map.getter().drawingInfo(drawigngData.tweet_count).radius
+        r : 2, //tweet_map.getter().drawingInfo(drawigngData.tweet_count).radius
     }    
 }
 drawigngData.tweet_count = -1;
 
-function update() {
+/*function update() {
     debugger;
     info = drawigngData();
     console.dir(data);
@@ -206,9 +226,9 @@ function update() {
         chart.addSeries(series);
     });
     chart.render();
-}
+}*/
 var numberOfSeries = 1,
-    numberOfDataPoint = 50,
+    numberOfDataPoint = 730,
     data = [];
 
 for (var i = 0; i < numberOfSeries; ++i)
@@ -218,8 +238,8 @@ for (var i = 0; i < numberOfSeries; ++i)
     }));
 var x_start_index = 0;
 var chart = bubbleChart()
-        .x(d3.scale.linear().domain([x_start_index, (x_start_index+numberOfDataPoint)]))
-        .y(d3.scale.linear().domain([-30, 30]))
+        .x(d3.scale.linear().domain([0,730]))
+        .y(d3.scale.linear().domain([-25, 25]))
         .r(d3.scale.pow().exponent(2).domain([0, 10]));
 
 data.forEach(function (series) {

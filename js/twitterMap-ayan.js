@@ -72,8 +72,8 @@ function Tweet_map () {
             },
             drawingInfo : function(position){
                 return {
-                    'yCoordinate' : probability[position],
-                    'radius' : (radius[position]/100)
+                    'yCoordinate' : probability[position]/*,
+                    'radius' : (radius[position]/100)*/
                 }
             }            
         }
