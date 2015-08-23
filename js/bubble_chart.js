@@ -102,7 +102,7 @@ function bubbleChart() {
                         else
                             return '#787878';
                     })
-                    .attr("cx", function (d) { 
+                    .attr("cx", function (d) {
                         return _x(d.x); // <-D
                     })
                     .attr("cy", function (d) { 
@@ -119,18 +119,22 @@ function bubbleChart() {
                           .transition()            
                             .delay(0)            
                             .duration(750)
-                            .attr("r", 25);
-                            // .text(function(d) { return d.r; });
+                            .attr("r", 25)
+                            .text(function(d) {display_tweet(d.text)});
                     };
 
                     function animateSecondStep(){
                         d3.select(this)
                           .transition()
                             .duration(1500)
-                            .attr("r", 2);
+                            .attr("r", 2)
+                            .text(function(d) {display_tweet('')});;
                     };
 
         });
+    }
+    function display_tweet(tweet){
+        document.getElementById("display_tweet").innerHTML = tweet;
     }
 
     function xStart() {
@@ -199,12 +203,18 @@ function bubbleChart() {
     };
     bubbleChart.update = function update() {
         _data.forEach(function (list, i) {
-            _bodyG.selectAll("circle._" + i).data(list).style("opacity", 1).transition()
-        .duration(2400).style("opacity", 0).remove();
-            console.log(list);
-                
-           });        
+            _bodyG.selectAll("circle._" + i)
+            .data(list)
+            .style("opacity", 1)
+            .transition()
+            .duration(2400)
+            .style("opacity", 0)
+            .remove();                    
+        });
+        var tweet_map = new Tweet_map();
 
+        _data = tweet_map.getter().updateData(_data);
+        console.dir(_data);
     }
     return _chart;
 }
@@ -225,11 +235,17 @@ var numberOfSeries = 1,
     numberOfDataPoint = 730,
     data = [];
 
-for (var i = 0; i < numberOfSeries; ++i)
+for (var i = 0; i < numberOfSeries; ++i){
     data.push(d3.range(numberOfDataPoint).map(function (i) {
         var info = drawigngData();
         return {x: info.x , y: info.y, r: info.r};
     }));
+}
+for(i=0;i<730;i++){
+    info = new Tweet_map().getter().drawingInfo(i);
+    data[0][i].text = info.tweet;
+}
+console.dir(data);
 var x_start_index = 0;
 var chart = bubbleChart()
         .x(d3.scale.linear().domain([0,750]))

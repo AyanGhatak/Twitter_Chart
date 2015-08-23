@@ -1,5 +1,5 @@
  var probability=[],
-        radius =[],
+        tweet_texts =[],
         count_tweet =0;
 function Tweet_map () {
    
@@ -47,10 +47,8 @@ function Tweet_map () {
                         for(k=0;k<keys.length;k+=1){
                             obj[keys[k]] = temp[keys[k]][i];
                         }
-                        // console.log(obj.text);
                         probability.push(calculate().calculateProbability(calculate().pesimist_optimistic_check(obj['text'])));
-                        radius.push(obj.favorite_count);
-                        // console.log(probability[count_tweet]);
+                        tweet_texts.push(obj.text);
                         useful_data[j]['tweets'].push(obj);
                     }
                 }
@@ -72,9 +70,12 @@ function Tweet_map () {
             },
             drawingInfo : function(position){
                 return {
-                    'yCoordinate' : probability[position]/*,
-                    'radius' : (radius[position]/100)*/
+                    'yCoordinate' : probability[position],
+                    'tweet' : tweet_texts[position]
                 }
+            },
+            updateData : function(list){
+                return calculate().updateData(list);
             }            
         }
     }
@@ -108,6 +109,18 @@ function Tweet_map () {
                     'negative_count' : negative_count,
                     'total_count' : str_arr.length
                 }
+            },
+            updateData : function(list){
+                var new_list=[];
+
+                for(i=0;i<list[0].length;i+=1){
+                    if(list[0][i].y != 0){
+                        new_list.push(list[0][i]);
+                    }
+                }
+                list[0] = new_list;
+                console.dir(list[0]);
+                return list;
             }       
         }
     }           
