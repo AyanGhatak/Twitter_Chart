@@ -77,7 +77,11 @@ function bubbleChart() {
                     .data(list)
                     .enter()
                     .append("circle") // <-C
-                    .attr("class", "bubble _" + i);
+                    .attr("class", "bubble _" + i)
+                    .style("opacity", 0)
+                    .transition()
+                    .duration(2000)
+                    .style("opacity", 1);
                     
             _bodyG.selectAll("circle._" + i)
                         .data(list)
@@ -108,17 +112,15 @@ function bubbleChart() {
                         return _r(d.r); // <-F
                     })
                     .on("mouseover", animateFirstStep)
-                    .on("mouseout", animateSecondStep);
-
-                    
+                    .on("mouseout", animateSecondStep);                    
 
                     function animateFirstStep(){
                         d3.select(this)
                           .transition()            
                             .delay(0)            
-                            .duration(1500)
-                            .attr("r", 25)
-                            .text(function(d) { alert(_x(d.x)); return d.r; });
+                            .duration(750)
+                            .attr("r", 25);
+                            // .text(function(d) { return d.r; });
                     };
 
                     function animateSecondStep(){
@@ -195,7 +197,15 @@ function bubbleChart() {
         _data.push(series);
         return _chart;
     };
+    bubbleChart.update = function update() {
+        _data.forEach(function (list, i) {
+            _bodyG.selectAll("circle._" + i).data(list).style("opacity", 1).transition()
+        .duration(2400).style("opacity", 0).remove();
+            console.log(list);
+                
+           });        
 
+    }
     return _chart;
 }
 
@@ -210,21 +220,7 @@ function drawigngData() {
 }
 drawigngData.tweet_count = -1;
 
-/*function update() {
-    debugger;
-    info = drawigngData();
-    console.dir(data);
-    data[0].shift();
-    console.dir(data[0]);
-    console.log(data[0].length);
-    console.dir(info);
-    data[0].push({x: info.x , y: info.y, r: info.r});
-    console.log(data[0].length);
-    data.forEach(function (series) {
-        chart.addSeries(series);
-    });
-    chart.render();
-}*/
+
 var numberOfSeries = 1,
     numberOfDataPoint = 730,
     data = [];
