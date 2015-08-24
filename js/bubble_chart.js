@@ -71,7 +71,6 @@ function bubbleChart() {
     
     function renderBubbles() {
         _r.range([0, 50]); // <-B
-        console.dir(_data);
         _data.forEach(function (list, i) {
             _bodyG.selectAll("circle._" + i)
                     .data(list)
@@ -252,49 +251,13 @@ function init(data){
         info = new Tweet_map().getter().drawingInfo(i);
         data[0][i].text = info.tweet;
     }
-    debugger;
     chart = bubbleChart()
             .x(d3.scale.linear().domain([0,numberOfDataPoint]))
             .y(d3.scale.linear().domain([-30, 30]))
             .r(d3.scale.pow().exponent(2).domain([0, 10]));
-    console.dir(data);
     data.forEach(function (series) {
-        console.dir(series);
         chart.addSeries(series);
     });    
 }
 init(data);
 chart.render();
-
-
-
-/*var numberOfSeries = 1,
-    numberOfDataPoint = 730,
-    data = [],
-    x_start_index = 0,
-    chart;
-
-function init(data){
-    for (var i = 0; i < numberOfSeries; ++i){
-        data.push(d3.range(numberOfDataPoint).map(function (i) {
-            var info = drawigngData();
-            return {x: info.x , y: info.y, r: info.r};
-        }));
-    }
-    drawigngData.tweet_count = -1;
-    for(i=0;i<numberOfDataPoint;i++){
-        info = new Tweet_map().getter().drawingInfo(i);
-        data[0][i].text = info.tweet;
-    }
-    chart = bubbleChart()
-        .x(d3.scale.linear().domain([0,750]))
-        .y(d3.scale.linear().domain([-30, 30]))
-        .r(d3.scale.pow().exponent(2).domain([0, 10]));
-
-    data.forEach(function (series) {
-        chart.addSeries(series);
-    });
-    
-}
-init(data);
-chart.render();*/
