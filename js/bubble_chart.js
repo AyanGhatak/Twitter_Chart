@@ -1,7 +1,7 @@
 function bubbleChart() {
     var _chart = {};
 
-    var _width = 0.8*screen.width, _height = 0.8*screen.height,
+    var _width = 0.8*screen.width, _height = 0.7*screen.height,
             _margins = {top: 30, left: 30, right: 30, bottom: 30},
             _x, _y, _r, // <-A
             _data = [],
@@ -71,7 +71,7 @@ function bubbleChart() {
     
     function renderBubbles() {
         _r.range([0, 50]); // <-B
-    
+        console.dir(_data);
         _data.forEach(function (list, i) {
             _bodyG.selectAll("circle._" + i)
                     .data(list)
@@ -212,9 +212,11 @@ function bubbleChart() {
             .remove();                    
         });
         var tweet_map = new Tweet_map();
-
-        _data = tweet_map.getter().updateData(_data);
+        debugger;
+        numberOfDataPoint = tweet_map.getter().updateData(_data)[0].length;
+        init([]);
         console.dir(_data);
+        renderBubbles();
     }
     return _chart;
 }
@@ -228,31 +230,71 @@ function drawigngData() {
         r : 2 
     }    
 }
-drawigngData.tweet_count = -1;
+
 
 
 var numberOfSeries = 1,
     numberOfDataPoint = 730,
-    data = [];
+    data = [],
+    x_start_index = 0,
+    chart;
 
-for (var i = 0; i < numberOfSeries; ++i){
-    data.push(d3.range(numberOfDataPoint).map(function (i) {
-        var info = drawigngData();
-        return {x: info.x , y: info.y, r: info.r};
-    }));
+function init(data){
+    drawigngData.tweet_count = -1;
+
+    for (var i = 0; i < numberOfSeries; ++i){
+        data.push(d3.range(numberOfDataPoint).map(function (i) {
+            var info = drawigngData();
+            return {x: info.x , y: info.y, r: info.r};
+        }));
+    }
+    for(i=0;i<numberOfDataPoint;i++){
+        info = new Tweet_map().getter().drawingInfo(i);
+        data[0][i].text = info.tweet;
+    }
+    debugger;
+    chart = bubbleChart()
+            .x(d3.scale.linear().domain([0,numberOfDataPoint]))
+            .y(d3.scale.linear().domain([-30, 30]))
+            .r(d3.scale.pow().exponent(2).domain([0, 10]));
+    console.dir(data);
+    data.forEach(function (series) {
+        console.dir(series);
+        chart.addSeries(series);
+    });    
 }
-for(i=0;i<730;i++){
-    info = new Tweet_map().getter().drawingInfo(i);
-    data[0][i].text = info.tweet;
-}
-console.dir(data);
-var x_start_index = 0;
-var chart = bubbleChart()
+init(data);
+chart.render();
+
+
+
+/*var numberOfSeries = 1,
+    numberOfDataPoint = 730,
+    data = [],
+    x_start_index = 0,
+    chart;
+
+function init(data){
+    for (var i = 0; i < numberOfSeries; ++i){
+        data.push(d3.range(numberOfDataPoint).map(function (i) {
+            var info = drawigngData();
+            return {x: info.x , y: info.y, r: info.r};
+        }));
+    }
+    drawigngData.tweet_count = -1;
+    for(i=0;i<numberOfDataPoint;i++){
+        info = new Tweet_map().getter().drawingInfo(i);
+        data[0][i].text = info.tweet;
+    }
+    chart = bubbleChart()
         .x(d3.scale.linear().domain([0,750]))
         .y(d3.scale.linear().domain([-30, 30]))
         .r(d3.scale.pow().exponent(2).domain([0, 10]));
 
-data.forEach(function (series) {
-    chart.addSeries(series);
-});
-chart.render();
+    data.forEach(function (series) {
+        chart.addSeries(series);
+    });
+    
+}
+init(data);
+chart.render();*/

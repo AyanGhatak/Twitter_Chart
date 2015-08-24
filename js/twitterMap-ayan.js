@@ -1,6 +1,8 @@
  var probability=[],
         tweet_texts =[],
-        count_tweet =0;
+        count_tweet =0,
+        likelyWords = {'positive': [],
+            'negative':[]};
 function Tweet_map () {
    
 
@@ -47,7 +49,7 @@ function Tweet_map () {
                         for(k=0;k<keys.length;k+=1){
                             obj[keys[k]] = temp[keys[k]][i];
                         }
-                        probability.push(calculate().calculateProbability(calculate().pesimist_optimistic_check(obj['text'])));
+                        probability.push(calculate().calculateProbability(calculate().pesimist_optimistic_check(obj['text'],positive_words,negative_words)));
                         tweet_texts.push(obj.text);
                         useful_data[j]['tweets'].push(obj);
                     }
@@ -75,34 +77,57 @@ function Tweet_map () {
                 }
             },
             updateData : function(list){
-                return calculate().updateData(list);
-            }            
+                list = calculate().updateData(list);
+                probability = [];
+                tweet_texts = [];
+                for(var i=0;i<list[0].length;i++){
+                    probability.push(0.75*calculate().calculateProbability(calculate().pesimist_optimistic_check(list[0][i].text, likelyWords.positive, likelyWords.negative)));
+                    tweet_texts.push(list[0][i].text);
+                }
+                return list;
+            }  
+
         }
     }
     
     function calculate(){
+
+        function generateLikelyWordList(capitalWords, nature){
+            var i;
+            for(i =0; i<capitalWords.length;i++){
+                (nature === 'Positive') ? likelyWords.positive.push(capitalWords[i]) : likelyWords.negative.push(capitalWords[i]); 
+            }                 
+        } 
         return {
-            calculateCordinate : '',
-            numberOfMonths : '',
-            calculateRadius: '',
             calculateProbability: function(count){
-                // console.log(count.positive_count, count.negative_count);
                 return ((count.positive_count - count.negative_count)/(count.total_count))*100;
             },
-            pesimist_optimistic_check : function(str){
-                var str_arr = str.toLowerCase().replace(/[^a-zA-Z ]/g, "").split(' '),
+
+            pesimist_optimistic_check : function(str, positive_words, negative_words){
+
+                var str_arr = str.replace(/[^a-zA-Z ]/g, "").split(' '),
                 positive_count = 0,
-                negative_count = 0;
+                negative_count = 0,
+                flag=0,
+                nature,
+                capitalWords=[];
 
                 for(i=0;i<str_arr.length;i++){
-                    if(positive_words.indexOf(str_arr[i]) > -1){
+                    if(str_arr[i].match(/^[A-Z]/) && i!=0){
+                        capitalWords.push(str_arr[i].toLowerCase());
+                    }
+                    if(positive_words.indexOf(str_arr[i].toLowerCase()) > -1){
+                        flag=1;
                         positive_count++;
-                        // console.log(str_arr[i]);
                     }
-                    if(negative_words.indexOf(str_arr[i]) > -1){
+                    if(negative_words.indexOf(str_arr[i].toLowerCase()) > -1){
+                        flag=1;
                         negative_count++;
-                        // console.log(str_arr[i]);
                     }
+                }
+                if(flag === 1){
+                    nature = (positive_count > negative_count)? 'Positive':'Negative';
+                    generateLikelyWordList(capitalWords,nature);
                 } 
                 return {
                     'positive_count' : positive_count,
@@ -110,18 +135,17 @@ function Tweet_map () {
                     'total_count' : str_arr.length
                 }
             },
+
             updateData : function(list){
                 var new_list=[];
-
                 for(i=0;i<list[0].length;i+=1){
-                    if(list[0][i].y != 0){
+                    if(list[0][i].y === 0){
                         new_list.push(list[0][i]);
                     }
                 }
                 list[0] = new_list;
-                console.dir(list[0]);
                 return list;
-            }       
+            }                 
         }
     }           
 
